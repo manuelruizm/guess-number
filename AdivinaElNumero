@@ -1,0 +1,167 @@
+//*****************************************************************************
+//
+// MANUEL RUIZ MALDONADO
+//
+// Fundamentos de Programación - Grado en Ingeniería Informática
+// ETSIIT Granada
+//
+// Curso 2014 - 2015
+//
+//*****************************************************************************
+//
+// Diseñar un programa para jugar a adivinar un número. 
+// El juego tiene que dar pistas de si el número introducido por el jugador 
+// está por encima o por debajo del número introducido. 
+// El programa genera de manera aleatoria el número que el jugador debe 
+// adivinar (entre 1 y 100). 
+//
+// Las reglas de parada son: 
+// 		Que el jugador adivine el número.
+// 		Que el jugador decida abandonar (el usuario escribirá 0 cuando se le 
+// 		pide el número tentativo).
+//
+// El programa permitirá repetir el juego de adivinación tantas veces como se 
+// desee: una vez completado un juego (incluso si ha abandonado) el programa 
+// preguntará si desea volver a jugar.
+//
+// Fichero: AdivinaElNumero.cpp
+//
+//*****************************************************************************
+
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <string>
+
+using namespace std;
+
+//*****************************************************************************
+
+void PintaCabecera (void);
+
+//*****************************************************************************
+
+int main ()
+{
+	// Valor terminador: fuerza el abandono del juego actual
+	const int FIN = 0;
+	
+	// Indicadores para continuar o terminar de jugar
+	const char SI = 'S', NO = 'N'; 
+	char opcion = SI;
+	
+	// Contador de estadísticas del juego
+	
+	int num_partidas = 0;
+	int num_partidas_exitosas = 0;
+	int num_partidas_abandonadas = 0;
+	
+	// Cabecera del juego
+	
+	PintaCabecera();
+	
+	// Inicio del juego
+	
+	while (opcion == SI) {
+		num_partidas++;
+	
+		// Generación del número aleatorio que se tiene que adivinar
+
+		int objetivo;
+
+    	const int MIN = 1, MAX=100;
+		const int NUM_VALORES = MAX-MIN+1;  
+
+		time_t t;
+		srand ((int) time(&t)); // Inicializa el generador con el reloj del
+								// sistema
+    	objetivo = (rand() % NUM_VALORES) + MIN; // MIN <= objetivo <= MAX
+
+
+		// Inicio de una partida
+	
+		int num_intentos = 0; // Contador de intentos válidos
+		int leido;	// Para leer el valor suministrado por el jugador 
+
+	
+		do {
+			cout << "Jugada " << (num_intentos+1) << " --> ";
+		    cout << "Introduzca un numero entre " << MIN << " y " 
+		    	 << MAX << ": ";
+    		cin >> leido;
+		} while (((leido<MIN) || (leido>MAX)) && (leido != FIN));
+		num_intentos++;
+
+    	while ((leido != FIN) && (leido != objetivo)) { 
+		    
+		// Las pistas solo se muestran si se va a seguir jugando
+		
+			if (leido > objetivo)
+    	    	cout << "\tEl numero a adivinar es MENOR que " << leido << endl;
+    	  	else 
+    	    	cout << "\tEl numero a adivinar es MAYOR que " << leido << endl;
+       		
+			do {
+				cout << "Jugada " << (num_intentos+1) << " --> ";
+			    cout << "Introduzca un numero entre " << MIN << " y " 
+			    	 << MAX << ": ";
+		    	cin >> leido;
+			} while (((leido<MIN) || (leido>MAX)) && (leido != FIN));
+			num_intentos++;
+    	}
+    
+   		// Ahora debemos discriminar la razón por la que terminó el ciclo
+        
+		if (leido==FIN) 
+		{
+	    	cout << "\nAbandonaste el juego. ";
+	    	num_partidas_abandonadas++;
+	    }
+	    
+		else 
+		{
+	    	cout << "\nHas acertado. ";
+	    	num_partidas_exitosas++;
+	    }
+	
+		cout << " El número buscado era " << objetivo << endl;  
+		cout << "Has usado " << num_intentos << " intentos.";      
+		cout << endl << endl;    	
+	
+		// Se obtiene información sobre si se quiere continuar jugando
+	
+		do {
+			cout << "\n¿Quieres volver a jugar? (S/N): ";
+			cin >> opcion;
+			opcion = toupper(opcion);
+		} while ((opcion != SI) && (opcion != NO));
+	}
+	
+	
+	// Resumen del juego
+	
+	cout << "\nHas jugado " << num_partidas << " partidas." << endl;
+	cout << "Has adivinado el número " << num_partidas_exitosas << " veces"
+		<< "--> " << (num_partidas_exitosas*100.0)/num_partidas << "%" << endl;
+	cout << "Has abandonado el juego " << num_partidas_abandonadas << " veces"
+		<< "--> " << (num_partidas_abandonadas*100.0)/num_partidas << "%"
+		<< endl << endl;
+	
+	
+	return (0);
+}
+
+//*****************************************************************************
+//*****************************************************************************
+
+// Función que pinta la cabecera del juego
+
+void PintaCabecera (void)
+{	
+	cout << "\n**************************************************************";
+	cout << "\n**************************************************************";
+	cout << "\n\tADIVINA EL NUMERO";
+	cout << "\n**************************************************************";
+	cout << "\n**************************************************************";
+	cout << endl << endl;
+}
